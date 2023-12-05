@@ -46,12 +46,14 @@ public class playerMovement : MonoBehaviour
         {
             velocity.y = -2f;
         }
+
         float MoveZ = Input.GetAxis("Vertical");
         float MoveX = Input.GetAxis("Horizontal");
 
         moveDirectionZ = new Vector3(0, 0, MoveZ);
         moveDirectionX = new Vector3(MoveX, 0, 0);
-        moveDirection = transform.TransformDirection(moveDirectionX + moveDirectionZ);
+
+        moveDirection = transform.TransformDirection(moveDirectionZ) + transform.TransformDirection(moveDirectionX);
 
         if (moveDirection != Vector3.zero && !Input.GetKey(KeyCode.LeftShift)) //walk
         {
@@ -61,7 +63,8 @@ public class playerMovement : MonoBehaviour
         {
             Run();
         }
-        if (characterController.isGrounded) 
+
+        if (characterController.isGrounded)
         {
             if (Input.GetKey(KeyCode.Space)) // jump
             {
@@ -72,24 +75,27 @@ public class playerMovement : MonoBehaviour
                 idle();
             }
         }
-        
-
-
-
 
         characterController.Move(moveDirection * moveSpeed * Time.deltaTime);
 
         velocity.y += gravity * Time.deltaTime; // applies gravity
         characterController.Move(velocity * Time.deltaTime);
-    }
+    
+}
     private void Walk()
     {
-        moveDirection *= walkSpeed;
+        Vector3 walkDirection = moveDirectionZ * walkSpeed;
+        walkDirection.y = 0f;
+        characterController.Move(walkDirection * Time.deltaTime);
     }
+
     private void Run()
     {
-        moveDirection *= runSpeed;
+        Vector3 runDirection = moveDirectionZ * runSpeed;
+        runDirection.y = 0f;
+        characterController.Move(runDirection * Time.deltaTime);
     }
+    
     private void jump()
     {
         velocity.y = Mathf.Sqrt(jumpheight * -2 * gravity);
