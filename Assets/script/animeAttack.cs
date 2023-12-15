@@ -1,47 +1,50 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting.Antlr3.Runtime;
+using UnityEngine.SceneManagement;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-public class animeAttack : MonoBehaviour
+public class EnemyAttack : MonoBehaviour
 {
-    private Transform Player;
-    private anime anime;
+    private EnemyMovement enemyMovement;
+    private Transform PLayer;
     public float attackRange = 10f;
-    public Material defaultMaterial;
-    public Material alterMaterial;
-    public Renderer rend;
-    private bool Foundplayer;
-    // Start is called before the first frame update
+
+    public Material defaultColor;
+    public Material attackMaterial;
+    private Renderer rend;
+
+    private bool foundPlayer;
+
     private void Awake()
     {
-        Player = GameObject.FindGameObjectWithTag("Player").transform;
-        anime = GetComponent<anime>();
-        rend = GetComponent<Renderer>(); 
+        PLayer = GameObject.FindGameObjectWithTag("Player").transform;
+        enemyMovement = GetComponent<EnemyMovement>();
+        rend = GetComponent<Renderer>();
     }
-
-
-
+    // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Vector3.Distance(transform.position, Player.position) <= attackRange)
+        if (Vector3.Distance(transform.position, PLayer.position) <= attackRange)
         {
-            rend.sharedMaterial = alterMaterial;
-            anime.badguy.SetDestination(Player.position);
-            Foundplayer = true;
+            rend.sharedMaterial = attackMaterial;
+            enemyMovement.badGuy.SetDestination(PLayer.position);
+            foundPlayer = true;
         }
-        else if (Foundplayer)
-        { 
-            rend.sharedMaterial = defaultMaterial;
-            anime.newLocation();
-            Foundplayer = false;
+        else if (foundPlayer)
+        {
+            rend.sharedMaterial = defaultColor;
+            enemyMovement.newLocation();
+            foundPlayer = false;
         }
+
+        if (Vector3.Distance(transform.position, PLayer.position) <= 2)
+        {
+            SceneManager.LoadScene("die");
+        }
+        Debug.Log(Vector3.Distance(transform.position, PLayer.position));
     }
 }
